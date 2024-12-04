@@ -6,6 +6,11 @@
 	"output": {
 		"abi": [
 			{
+				"inputs": [],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
 				"anonymous": false,
 				"inputs": [
 					{
@@ -23,6 +28,124 @@
 				],
 				"name": "DIDCreated",
 				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "oldIdentifier",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "newIdentifier",
+						"type": "string"
+					}
+				],
+				"name": "DIDUpdated",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "user",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "name",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "email",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "profilePicture",
+						"type": "string"
+					}
+				],
+				"name": "MetadataSet",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "user",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "role",
+						"type": "string"
+					}
+				],
+				"name": "RoleAssigned",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "user",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "role",
+						"type": "string"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "issuer",
+						"type": "address"
+					}
+				],
+				"name": "RoleCredentialIssued",
+				"type": "event"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_user",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "_role",
+						"type": "string"
+					}
+				],
+				"name": "assignRole",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
 			},
 			{
 				"inputs": [
@@ -53,19 +176,116 @@
 			{
 				"inputs": [
 					{
+						"internalType": "address",
+						"name": "_user",
+						"type": "address"
+					}
+				],
+				"name": "getMetadata",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "name",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "email",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "profilePicture",
+								"type": "string"
+							}
+						],
+						"internalType": "struct DIDRegistry.Metadata",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_user",
+						"type": "address"
+					}
+				],
+				"name": "getRole",
+				"outputs": [
+					{
 						"internalType": "string",
-						"name": "_newIdentifier",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_name",
 						"type": "string"
 					},
 					{
 						"internalType": "string",
-						"name": "_identifier",
+						"name": "_email",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_profilePicture",
+						"type": "string"
+					}
+				],
+				"name": "setMetadata",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_newIdentifier",
 						"type": "string"
 					}
 				],
 				"name": "updateDID",
 				"outputs": [],
 				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_user",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "_role",
+						"type": "string"
+					}
+				],
+				"name": "verifyRoleCredential",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
 				"type": "function"
 			}
 		],
@@ -97,11 +317,11 @@
 	},
 	"sources": {
 		"DidRegistry.sol": {
-			"keccak256": "0xf369c574695c9d8afff3c0eda4c40d69547cd5585d153f9932d4d13ac6a4a901",
+			"keccak256": "0xa7221e16c410459fba7013192923b32a57f0d9a595112b9beb8cb198c0c52b54",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://632ada2d9d60b2673f0c38b38dfc01f80ee9ca8387910bc11b1433caae136c28",
-				"dweb:/ipfs/QmdxxoymCp2jDJsLfUib7PJpqQDzZRBuwzLwL8hwz6hAqj"
+				"bzz-raw://2d81c97bfb3cb6003799865a74d50df5451e4e6931668c9aa0a16b9a8d94143d",
+				"dweb:/ipfs/Qmd5JyTLDBADsbhWvp9w189XxUgSYQBMdpi7uxGBbm9cEn"
 			]
 		}
 	},

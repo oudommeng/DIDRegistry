@@ -111,6 +111,56 @@
 				"type": "event"
 			},
 			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "user",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "grade",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "gradedTime",
+						"type": "uint256"
+					}
+				],
+				"name": "TestGraded",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "user",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "answersHash",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "submissionTime",
+						"type": "uint256"
+					}
+				],
+				"name": "TestSubmitted",
+				"type": "event"
+			},
+			{
 				"inputs": [
 					{
 						"internalType": "address",
@@ -174,6 +224,16 @@
 								"internalType": "string",
 								"name": "profilePicture",
 								"type": "string"
+							},
+							{
+								"internalType": "uint256",
+								"name": "totalTestsSubmitted",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "lastTestScore",
+								"type": "uint256"
 							}
 						],
 						"internalType": "struct DIDRegistryWithRoles.MetaData",
@@ -182,6 +242,77 @@
 					}
 				],
 				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getRole",
+				"outputs": [
+					{
+						"internalType": "string[]",
+						"name": "",
+						"type": "string[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getTestSubmissions",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "answersHash",
+								"type": "string"
+							},
+							{
+								"internalType": "uint256",
+								"name": "submissionTime",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "grade",
+								"type": "uint256"
+							},
+							{
+								"internalType": "bool",
+								"name": "graded",
+								"type": "bool"
+							}
+						],
+						"internalType": "struct DIDRegistryWithRoles.TestSubmission[]",
+						"name": "",
+						"type": "tuple[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "user",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "testIndex",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "grade",
+						"type": "uint256"
+					}
+				],
+				"name": "gradeTest",
+				"outputs": [],
+				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
@@ -224,6 +355,19 @@
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "answersHash",
+						"type": "string"
+					}
+				],
+				"name": "submitTest",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
 			}
 		],
 		"devdoc": {
@@ -239,7 +383,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"DIDTeacher.sol": "DIDRegistryWithRoles"
+			"Project.sol": "DIDRegistryWithRoles"
 		},
 		"evmVersion": "cancun",
 		"libraries": {},
@@ -253,12 +397,12 @@
 		"remappings": []
 	},
 	"sources": {
-		"DIDTeacher.sol": {
-			"keccak256": "0x46a176d6185534529bf5211701226cd23b416c82e4a8a1cc436b9a1620c37b08",
+		"Project.sol": {
+			"keccak256": "0xacde89c5b8a8efbb1b61c2001fcbb6b10c50acc822b72217c725f1fed17059d3",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://f5e91654dd812b42e0e999c5b85a270f70803a49ad4c0667fd0ac6599f1a0982",
-				"dweb:/ipfs/QmceYD8QxHeEK1FhwdYijFiUsyGeo3dhCUUC7nh5VZ7mEx"
+				"bzz-raw://28e63c219d2e4244937ac6e0de2c132ccfca614643d07dba54181981113f3099",
+				"dweb:/ipfs/QmZFTXe8Pn2q3Q8c4217DrDyZDNvnSThvtkRdTk29vXDZN"
 			]
 		}
 	},

@@ -35,23 +35,17 @@
 					{
 						"indexed": true,
 						"internalType": "address",
-						"name": "owner",
+						"name": "user",
 						"type": "address"
 					},
 					{
 						"indexed": false,
 						"internalType": "string",
-						"name": "oldIdentifier",
-						"type": "string"
-					},
-					{
-						"indexed": false,
-						"internalType": "string",
-						"name": "newIdentifier",
+						"name": "role",
 						"type": "string"
 					}
 				],
-				"name": "DIDUpdated",
+				"name": "RoleAssign",
 				"type": "event"
 			},
 			{
@@ -61,6 +55,37 @@
 						"indexed": true,
 						"internalType": "address",
 						"name": "user",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "receiver",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "role",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "bytes32",
+						"name": "hash",
+						"type": "bytes32"
+					}
+				],
+				"name": "RoleIssued",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "owner",
 						"type": "address"
 					},
 					{
@@ -82,51 +107,7 @@
 						"type": "string"
 					}
 				],
-				"name": "MetadataSet",
-				"type": "event"
-			},
-			{
-				"anonymous": false,
-				"inputs": [
-					{
-						"indexed": true,
-						"internalType": "address",
-						"name": "user",
-						"type": "address"
-					},
-					{
-						"indexed": false,
-						"internalType": "string",
-						"name": "role",
-						"type": "string"
-					}
-				],
-				"name": "RoleAssigned",
-				"type": "event"
-			},
-			{
-				"anonymous": false,
-				"inputs": [
-					{
-						"indexed": true,
-						"internalType": "address",
-						"name": "user",
-						"type": "address"
-					},
-					{
-						"indexed": false,
-						"internalType": "string",
-						"name": "role",
-						"type": "string"
-					},
-					{
-						"indexed": true,
-						"internalType": "address",
-						"name": "issuer",
-						"type": "address"
-					}
-				],
-				"name": "RoleCredentialIssued",
+				"name": "SetMetaData",
 				"type": "event"
 			},
 			{
@@ -174,13 +155,7 @@
 				"type": "function"
 			},
 			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "_user",
-						"type": "address"
-					}
-				],
+				"inputs": [],
 				"name": "getMetadata",
 				"outputs": [
 					{
@@ -201,7 +176,7 @@
 								"type": "string"
 							}
 						],
-						"internalType": "struct DIDRegistry.Metadata",
+						"internalType": "struct DIDRegistryWithRoles.MetaData",
 						"name": "",
 						"type": "tuple"
 					}
@@ -215,74 +190,14 @@
 						"internalType": "address",
 						"name": "_user",
 						"type": "address"
-					}
-				],
-				"name": "getRole",
-				"outputs": [
-					{
-						"internalType": "string",
-						"name": "",
-						"type": "string"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "_user",
-						"type": "address"
-					}
-				],
-				"name": "getRoleHistory",
-				"outputs": [
-					{
-						"components": [
-							{
-								"internalType": "string",
-								"name": "role",
-								"type": "string"
-							},
-							{
-								"internalType": "address",
-								"name": "issuer",
-								"type": "address"
-							},
-							{
-								"internalType": "uint256",
-								"name": "issuedAt",
-								"type": "uint256"
-							}
-						],
-						"internalType": "struct DIDRegistry.RoleCredential[]",
-						"name": "",
-						"type": "tuple[]"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "string",
-						"name": "_name",
-						"type": "string"
 					},
 					{
 						"internalType": "string",
-						"name": "_email",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "_profilePicture",
+						"name": "_role",
 						"type": "string"
 					}
 				],
-				"name": "setMetadata",
+				"name": "issueRole",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -291,11 +206,21 @@
 				"inputs": [
 					{
 						"internalType": "string",
-						"name": "_newIdentifier",
+						"name": "name",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "email",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "profilePicture",
 						"type": "string"
 					}
 				],
-				"name": "updateDID",
+				"name": "setMetadata",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -314,7 +239,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"DidRegistry.sol": "DIDRegistry"
+			"DIDTeacher.sol": "DIDRegistryWithRoles"
 		},
 		"evmVersion": "cancun",
 		"libraries": {},
@@ -328,12 +253,12 @@
 		"remappings": []
 	},
 	"sources": {
-		"DidRegistry.sol": {
-			"keccak256": "0x00132146a2c0aedcf29ec10812960cbeeef81438e9fef7414b0d598fbf3b3a80",
+		"DIDTeacher.sol": {
+			"keccak256": "0x46a176d6185534529bf5211701226cd23b416c82e4a8a1cc436b9a1620c37b08",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://21c10d9093197ec8d92ce41129021f1264f5fd31dd0d52e69a757cd747047cde",
-				"dweb:/ipfs/QmYZWNpx8JnqtXU6B9RRxkfuAmzxAeZbK67sgrZNokFesG"
+				"bzz-raw://f5e91654dd812b42e0e999c5b85a270f70803a49ad4c0667fd0ac6599f1a0982",
+				"dweb:/ipfs/QmceYD8QxHeEK1FhwdYijFiUsyGeo3dhCUUC7nh5VZ7mEx"
 			]
 		}
 	},

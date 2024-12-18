@@ -75,7 +75,18 @@ contract DIDRegistryWithRoles {
     //         }
     //      return false;
     // }
-
+    
+    function verifyRole(address _user, string memory _role) public view returns (bool) {
+        require(bytes(_role).length > 0, "Role cannot be empty");
+        
+        string[] memory userRoles = roleHistory[_user];
+        for (uint256 i = 0; i < userRoles.length; i++) {
+            if (keccak256(abi.encodePacked(userRoles[i])) == keccak256(abi.encodePacked(_role))) {
+                return true;
+            }
+        }
+        return false;
+    }
     function createDID(string memory _identifier) public {
         require(bytes(_identifier).length > 0, "Identifier cannot be empty");
         require(dids[msg.sender].owner == address(0), "DID already exists");

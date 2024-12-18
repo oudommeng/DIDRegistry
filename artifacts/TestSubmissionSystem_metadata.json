@@ -1,0 +1,507 @@
+{
+	"compiler": {
+		"version": "0.8.26+commit.8a97fa7a"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "identifier",
+						"type": "string"
+					}
+				],
+				"name": "DIDCreated",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "user",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "role",
+						"type": "string"
+					}
+				],
+				"name": "RoleAssigned",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "user",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "receiver",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "role",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "bytes32",
+						"name": "hash",
+						"type": "bytes32"
+					}
+				],
+				"name": "RoleIssued",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "name",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "email",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "profilePicture",
+						"type": "string"
+					}
+				],
+				"name": "SetMetaData",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "testId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "title",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "maxScore",
+						"type": "uint256"
+					}
+				],
+				"name": "TestCreated",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "user",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "testId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "grade",
+						"type": "uint256"
+					}
+				],
+				"name": "TestSubmitted",
+				"type": "event"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_user",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "_role",
+						"type": "string"
+					}
+				],
+				"name": "assignRole",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_identifier",
+						"type": "string"
+					}
+				],
+				"name": "createDID",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "title",
+						"type": "string"
+					},
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "text",
+								"type": "string"
+							},
+							{
+								"internalType": "string[4]",
+								"name": "answers",
+								"type": "string[4]"
+							},
+							{
+								"internalType": "uint8",
+								"name": "correctAnswerIndex",
+								"type": "uint8"
+							}
+						],
+						"internalType": "struct TestSubmissionSystem.Question[]",
+						"name": "questions",
+						"type": "tuple[]"
+					}
+				],
+				"name": "createTest",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getDID",
+				"outputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getMetadata",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "name",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "email",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "profilePicture",
+								"type": "string"
+							},
+							{
+								"internalType": "uint256",
+								"name": "totalTestsSubmitted",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "lastTestScore",
+								"type": "uint256"
+							}
+						],
+						"internalType": "struct TestSubmissionSystem.MetaData",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getRole",
+				"outputs": [
+					{
+						"internalType": "string[]",
+						"name": "",
+						"type": "string[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "testId",
+						"type": "uint256"
+					}
+				],
+				"name": "getTestQuestions",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "text",
+								"type": "string"
+							},
+							{
+								"internalType": "string[4]",
+								"name": "answers",
+								"type": "string[4]"
+							},
+							{
+								"internalType": "uint8",
+								"name": "correctAnswerIndex",
+								"type": "uint8"
+							}
+						],
+						"internalType": "struct TestSubmissionSystem.Question[]",
+						"name": "",
+						"type": "tuple[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getTestSubmissions",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "testId",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint8[]",
+								"name": "answers",
+								"type": "uint8[]"
+							},
+							{
+								"internalType": "bytes32",
+								"name": "answerHash",
+								"type": "bytes32"
+							},
+							{
+								"internalType": "uint256",
+								"name": "grade",
+								"type": "uint256"
+							},
+							{
+								"internalType": "bytes32",
+								"name": "gradeHash",
+								"type": "bytes32"
+							},
+							{
+								"internalType": "uint256",
+								"name": "submissionTime",
+								"type": "uint256"
+							},
+							{
+								"internalType": "bool",
+								"name": "graded",
+								"type": "bool"
+							}
+						],
+						"internalType": "struct TestSubmissionSystem.TestSubmission[]",
+						"name": "",
+						"type": "tuple[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_user",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "_role",
+						"type": "string"
+					}
+				],
+				"name": "issueRole",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "name",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "email",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "profilePicture",
+						"type": "string"
+					}
+				],
+				"name": "setMetadata",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "testId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint8[]",
+						"name": "answers",
+						"type": "uint8[]"
+					}
+				],
+				"name": "submitTest",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "user",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "role",
+						"type": "string"
+					},
+					{
+						"internalType": "address",
+						"name": "issuerAddress",
+						"type": "address"
+					}
+				],
+				"name": "verifyRole",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"Project.sol": "TestSubmissionSystem"
+		},
+		"evmVersion": "cancun",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"Project.sol": {
+			"keccak256": "0x185749b025d5ebfc16802f7caf811287e75d7ea0004945c359339769d17194f6",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://c149276829941713bb5bbedd349304fd6e79d8002077251456c99e68dbcf8bba",
+				"dweb:/ipfs/QmWkXPZArhFLG5o9VnZM3qxgbfTU8cCZgyBwzmYzLujZzD"
+			]
+		}
+	},
+	"version": 1
+}

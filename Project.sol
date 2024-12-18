@@ -1,82 +1,158 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-contract DIDRegistryWithRoles {
+pragma experimental ABIEncoderV2;
+
+contract TestSubmissionSystem {
+    // Struct to store Decentralized Identifier (DID) information
     struct DID {
-        string identifier;
-        address owner;
-        uint256 createdAt;
+        string identifier; // Unique identifier for the DID
+        address owner; // Address of the owner of this DID
+        uint256 createdAt; // Timestamp when the DID was created
     }
 
+    // Struct to store metadata about a user
     struct MetaData {
-        string name;
-        string email;
-        string profilePicture;
-        uint256 totalTestsSubmitted; // Track total tests submitted
-        uint256 lastTestScore; // Last test score
+        string name; // User's name
+        string email; // User's email address
+        string profilePicture; // URL to the user's profile picture
+        uint256 totalTestsSubmitted; // Total number of tests the user has submitted
+        uint256 lastTestScore; // Last test score received by the user
     }
 
+    // Struct to define a question in a test
+    struct Question {
+        string text; // Question text
+        string[4] answers; // Four possible answers to the question
+        uint8 correctAnswerIndex; // Index of the correct answer (0-3)
+    }
+
+    // Struct to define a test
+    struct Test {
+        string title; // Title of the test
+        Question[] questions; // Array of questions in the test
+        uint256 maxScore; // Maximum score a participant can achieve
+        bool exists; // Boolean to check if the test exists
+    }
+
+    // Struct to store details of a test submission
     struct TestSubmission {
-        string answersHash; // Hash of the submitted answers
-        uint256 submissionTime; // Time of submission
-        uint256 grade; // Grade awarded (0 if not graded yet)
+        uint256 testId; // ID of the test being submitted
+        uint8[] answers; // Array of answers submitted by the user
+        bytes32 answerHash; // Answer hash
+        uint256 grade; // Grade achieved by the user
+        bytes32 gradeHash; // grade hash
+        uint256 submissionTime; // Timestamp of the submission
         bool graded; // Whether the test has been graded
     }
 
-    struct credential {
-        address issuer;
-        string role;
-        uint256 issueAt;
-        bytes32 hashes;
+    // Struct to represent issued credentials for roles
+    struct Credential {
+        address issuer; // Address of the role issuer
+        string role; // Role issued to the user
+        uint256 issueAt; // Timestamp of when the role was issued
+        bytes32 hashes; // Hash to verify credential issuance
     }
 
-    mapping(address => DID) private dids;
-    mapping(address => string) private roles;
-    mapping(address => string[]) private roleHistory;
-    mapping(address => MetaData) private metadatas;
-    mapping(address => credential[]) private credentials;
-    mapping(address => TestSubmission[]) private testSubmissions;
+    // Mappings to store data
+    mapping(address => DID) private dids; // Mapping to store DID for each address
+    mapping(address => string) private roles; // Mapping to store role for each user
+    mapping(address => string[]) private roleHistory; // Role history for each user
+    mapping(address => MetaData) private metadatas; // Metadata for each user
+    mapping(address => Credential[]) private credentials; // Credentials issued to each user
+    mapping(address => TestSubmission[]) private testSubmissions; // Test submissions for each user
+    mapping(uint256 => Test) private tests; // Mapping of test ID to Test struct
+    mapping(address => mapping(uint256 => bool)) private hasTakenTest; // Mapping to track whether a student has already taken a test
+    uint256 private nextTestId; // Auto-incrementing test ID for new tests
 
+    // Constructor to initialize the contract
     constructor() {
-        roles[msg.sender] = "super admin";
-        roleHistory[msg.sender].push("super admin");
+        roles[msg.sender] = "government"; // Assign "government" role to the contract deployer
+        roleHistory[msg.sender].push("government"); // Add "government" to role history
     }
 
-    event DIDCreated(address indexed owner, string identifier);
+    // Events to log actions
+    event DIDCreated(address indexed owner, string identifier); // When a DID is created
     event SetMetaData(
         address indexed owner,
         string name,
         string email,
         string profilePicture
-    );
-    event RoleAssign(address indexed user, string role);
+    ); // When metadata is set
+    event RoleAssigned(address indexed user, string role); // When a role is assigned
     event RoleIssued(
         address indexed user,
         address receiver,
         string role,
         bytes32 hash
-    );
-    event TestSubmitted(
-        address indexed user,
-        string answersHash,
-        uint256 submissionTime
-    );
-    event TestGraded(
-        address indexed user,
-        uint256 grade,
-        uint256 gradedTime
-    );
+    ); // When a role is issued
+    event TestCreated(uint256 indexed testId, string title, uint256 maxScore); // When a test is created
+    event TestSubmitted(address indexed user, uint256 testId, uint256 grade); // When a test is submitted
 
-    function assignRole(address _user, string memory _role) public {
-        require(dids[msg.sender].owner != address(0), "Issuer must have a DID");
-        require(bytes(_role).length > 0, "Role cannot be empty");
-        roles[_user] = _role;
-        //test if the user have permission to assign role
-        roleHistory[_user].push(_role);
-        emit RoleAssign(_user, _role);
+    // Modifiers to enforce role-based access control
+    modifier onlyGovernment() {
+        require(
+            keccak256(abi.encodePacked(roles[msg.sender])) ==
+                keccak256("government"),
+            "Only government can perform this action"
+        );
+        _;
     }
 
-    function issueRole(address _user, string memory _role) public {
+    modifier onlyTeacher() {
+        require(
+            keccak256(abi.encodePacked(roles[msg.sender])) ==
+                keccak256("teacher"),
+            "Only teacher can perform this action"
+        );
+        _;
+    }
+
+    modifier onlyStudent() {
+        require(
+            keccak256(abi.encodePacked(roles[msg.sender])) ==
+                keccak256("student"),
+            "Only student can perform this action"
+        );
+        _;
+    }
+
+    modifier onlyGovernmentOrTeacher() {
+        require(
+            keccak256(abi.encodePacked(roles[msg.sender])) ==
+                keccak256("teacher") ||
+                keccak256(abi.encodePacked(roles[msg.sender])) ==
+                keccak256("government"),
+            "Only student can perform this action"
+        );
+        _;
+    }
+
+    // Function to assign roles (admin or student)
+    function assignRole(address _user, string memory _role)
+        public
+        onlyGovernment
+    {
+        require(dids[msg.sender].owner != address(0), "Issuer must have a DID"); // Ensure issuer has a DID
+        require(bytes(_role).length > 0, "Role cannot be empty"); // Ensure the role is not empty
+
+        // Validate role names
+        require(
+            keccak256(abi.encodePacked(_role)) == keccak256("teacher") ||
+                keccak256(abi.encodePacked(_role)) == keccak256("student"),
+            "Invalid role"
+        );
+
+        roles[_user] = _role; // Assign the role
+        roleHistory[_user].push(_role); // Add the role to user's role history
+        emit RoleAssigned(_user, _role); // Emit the RoleAssigned event
+    }
+
+    // Function for super admin to issue roles
+    function issueRole(address _user, string memory _role)
+        public
+        onlyGovernment
+    {
         require(dids[msg.sender].owner != address(0), "Issuer must have a DID");
         require(bytes(_role).length > 0, "Role cannot be empty");
 
@@ -85,7 +161,7 @@ contract DIDRegistryWithRoles {
         );
 
         credentials[_user].push(
-            credential(msg.sender, _role, block.timestamp, roleHash)
+            Credential(msg.sender, _role, block.timestamp, roleHash)
         );
 
         roleHistory[_user].push(_role);
@@ -93,6 +169,7 @@ contract DIDRegistryWithRoles {
         emit RoleIssued(msg.sender, _user, _role, roleHash);
     }
 
+    // Function to create a DID for a user
     function createDID(string memory _identifier) public {
         require(bytes(_identifier).length > 0, "Identifier cannot be empty");
         require(dids[msg.sender].owner == address(0), "DID already exists");
@@ -136,51 +213,163 @@ contract DIDRegistryWithRoles {
     }
 
     function getRole() public view returns (string[] memory) {
-        // get userdid to find in array.
-        // if you got 0, it mean u dont have role yet
-        // if you didn't get 0, return that array.
         require(
             dids[msg.sender].owner != address(0),
             "No DID found for this address"
         );
-
         require(roleHistory[msg.sender].length > 0, "No roles assigned yet");
         return roleHistory[msg.sender];
     }
 
-    // Allows users to submit test answers (stored as a hash).
-    function submitTest(string memory answersHash) public {
-        require(dids[msg.sender].owner != address(0), "No DID found for this address");
-        require(bytes(answersHash).length > 0, "Answers hash cannot be empty");
-
-        testSubmissions[msg.sender].push(
-            TestSubmission(answersHash, block.timestamp, 0, false)
+    function verifyRole(
+        address user,
+        string memory role,
+        address issuerAddress
+    ) public view returns (bool) {
+        require(
+            dids[user].owner != address(0),
+            "No DID found for this address"
+        );
+        require(
+            bytes(roles[user]).length > 0,
+            "User does not have any assigned roles"
         );
 
-        metadatas[msg.sender].totalTestsSubmitted += 1;
+        bool roleMatches = keccak256(abi.encodePacked(roles[user])) ==
+            keccak256(abi.encodePacked(role));
+        bool issuerMatches = false;
 
-        emit TestSubmitted(msg.sender, answersHash, block.timestamp);
+        // Check the role issuer and the hash in the user's credentials
+        for (uint256 i = 0; i < credentials[user].length; i++) {
+            if (
+                credentials[user][i].issuer == issuerAddress &&
+                keccak256(abi.encodePacked(credentials[user][i].role)) ==
+                keccak256(abi.encodePacked(role))
+            ) {
+                issuerMatches = true;
+                break;
+            }
+        }
+
+        return roleMatches && issuerMatches;
     }
 
-    // Allows issuers to grade submitted tests.
-    function gradeTest(
-        address user,
-        uint256 testIndex,
-        uint256 grade
-    ) public {
-        require(dids[msg.sender].owner != address(0), "Issuer must have a DID");
-        require(testIndex < testSubmissions[user].length, "Invalid test index");
-        require(!testSubmissions[user][testIndex].graded, "Test already graded");
+    // Function for admin to create a test
+    function createTest(string memory title, Question[] memory questions)
+        public
+        onlyTeacher
+    {
+        require(bytes(title).length > 0, "Test title cannot be empty");
+        require(questions.length > 0, "Questions are required");
 
-        testSubmissions[user][testIndex].grade = grade;
-        testSubmissions[user][testIndex].graded = true;
-        metadatas[user].lastTestScore = grade;
+        uint256 maxScore = questions.length; // Maximum score equals the number of questions
 
-        emit TestGraded(user, grade, block.timestamp);
+        Test storage newTest = tests[nextTestId]; // Create a new test
+        newTest.title = title;
+        newTest.exists = true;
+        newTest.maxScore = maxScore;
+
+        // Add questions to the test
+        for (uint256 i = 0; i < questions.length; i++) {
+            require(
+                bytes(questions[i].text).length > 0,
+                "Question text cannot be empty"
+            );
+            require(
+                questions[i].correctAnswerIndex < 4,
+                "Invalid correct answer index"
+            );
+            newTest.questions.push(questions[i]);
+        }
+
+        emit TestCreated(nextTestId, title, maxScore); // Emit TestCreated event
+        nextTestId++; // Increment test ID for the next test
     }
 
-    function getTestSubmissions() public view returns (TestSubmission[] memory) {
-        require(dids[msg.sender].owner != address(0), "No DID found for this address");
+    // Function to allow students to view test questions without revealing answers
+    function getTestQuestions(uint256 testId)
+        public
+        view
+        onlyGovernmentOrTeacher
+        returns (Question[] memory)
+    {
+        require(tests[testId].exists, "Test does not exist");
+
+        uint256 numQuestions = tests[testId].questions.length;
+        Question[] memory questionsToView = new Question[](numQuestions);
+
+        for (uint256 i = 0; i < numQuestions; i++) {
+            // Return only the text and the possible answers, but not the correct answer index
+            questionsToView[i] = Question({
+                text: tests[testId].questions[i].text,
+                answers: tests[testId].questions[i].answers,
+                correctAnswerIndex: 255 // Placeholder value to ensure privacy (since it's hidden)
+            });
+        }
+
+        return questionsToView;
+    }
+
+    // Students submit test answers
+    function submitTest(uint256 testId, uint8[] memory answers)
+        public
+        onlyStudent
+    {
+        require(tests[testId].exists, "Test does not exist");
+        require(
+            answers.length == tests[testId].questions.length,
+            "Answers count mismatch"
+        );
+        require(
+            !hasTakenTest[msg.sender][testId],
+            "You have already taken this test"
+        ); // Ensure only one test submission
+
+        // Hash the submitted answers
+        bytes32 answersHash = keccak256(
+            abi.encodePacked(msg.sender, testId, answers)
+        );
+
+        uint256 grade = 0;
+        for (uint256 i = 0; i < answers.length; i++) {
+            if (answers[i] == tests[testId].questions[i].correctAnswerIndex) {
+                grade++;
+            }
+        }
+
+        // Hash the grade
+        bytes32 gradeHash = keccak256(
+            abi.encodePacked(msg.sender, testId, grade)
+        );
+
+        testSubmissions[msg.sender].push(
+            TestSubmission({
+                testId: testId, // ID of the test being submitted
+                answers: answers, // Array of answers submitted by the user
+                answerHash: answersHash, // Answer hash
+                grade: grade, // Grade achieved by the user
+                gradeHash: gradeHash, // grade hash
+                submissionTime: block.timestamp, // Timestamp of the submission
+                graded: true // Whether the test has been graded
+            })
+        );
+
+        metadatas[msg.sender].totalTestsSubmitted++;
+        metadatas[msg.sender].lastTestScore = grade;
+
+        // Mark test as taken
+        hasTakenTest[msg.sender][testId] = true;
+
+        emit TestSubmitted(msg.sender, testId, grade);
+    }
+
+    // Students view their submissions
+    function getTestSubmissions()
+        public
+        view
+        onlyStudent
+        returns (TestSubmission[] memory)
+    {
         return testSubmissions[msg.sender];
     }
 }
